@@ -19,7 +19,6 @@ def source_to_destination(source_numbers: list[int], map_lines: list[str]) -> in
             j += 1
 
 
-
 def part_one(str_input: str):
     seeds = [int(num) for num in str_input.split('\n\n')[0].lstrip('seeds: ').split()]
     maps = [lines.split(":")[1].strip() for lines in str_input.split("\n\n")[1:]]
