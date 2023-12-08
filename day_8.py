@@ -11,16 +11,13 @@ def traverse_nodes(start: str, destination: str, directions: list[str], node_dic
     current = start
     while (current != destination) or (count == 0):
         count += 1
-        direction = directions[(count - 1)%len(directions)]
-        if direction == 'L':
-            current = node_dict[current][0]
-        else:
-            current = node_dict[current][1]
+        direction = directions[(count - 1) % len(directions)]
+        current = node_dict[current][direction]
     return count
 
 
 def part_one(str_input: str):
-    directions = list(str_input.split('\n\n')[0])
+    directions = [0 if direction == "L" else 1 for direction in list(str_input.split('\n\n')[0])]
     nodes = str_input.split('\n\n')[1].split('\n')
     node_dict = {}
     for node in nodes:
@@ -46,23 +43,20 @@ ZZZ = (ZZZ, ZZZ)""") == 2
 # ----- PART TWO -----
 
 
-def z_list_for_node(node: str, directions: list[str], node_dict:dict) -> list[str]:
+def z_list_for_node(current: str, directions: list[str], node_dict:dict) -> list[str]:
     count = 0
     z_list = []
-    while node not in z_list:
+    while current not in z_list:
         count += 1
-        direction = directions[(count - 1)%len(directions)]
-        if direction == 'L':
-            node = node_dict[node][0]
-        else:
-            node = node_dict[node][1]
-        if node[-1] == "Z":
-            z_list.append(node)
+        direction = directions[(count - 1) % len(directions)]
+        current = node_dict[current][direction]
+        if current[-1] == "Z":
+            z_list.append(current)
     return z_list
 
 
 def part_two(str_input: str):
-    directions = list(str_input.split('\n\n')[0])
+    directions = [0 if direction == "L" else 1 for direction in list(str_input.split('\n\n')[0])]
     nodes = str_input.split('\n\n')[1].split('\n')
     node_dict = {}
     for node in nodes:
@@ -70,7 +64,9 @@ def part_two(str_input: str):
             node.split(' = ')[1].split(', ')[0].lstrip('('),
             node.split(' = ')[1].split(', ')[1].rstrip(')')
             ]
+        
     a_nodes = [node for node in node_dict.keys() if node[-1] == "A"]
+
     factors_and_constants = []
     for node in a_nodes:
         z_node = z_list_for_node(node, directions, node_dict)[0]
@@ -79,6 +75,7 @@ def part_two(str_input: str):
             'constant': constant,
             'factor': traverse_nodes(z_node, z_node, directions[constant:] + directions[:constant], node_dict)
         })
+        
     # factor always == constant, for some reason, and is always a divisor of directions, which makes it much easier
     return np.lcm.reduce([node['factor'] for node in factors_and_constants])
 
