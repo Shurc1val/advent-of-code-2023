@@ -1,8 +1,11 @@
+from itertools import product
 import pytest
 
 from read_data_function import read_data
 
+
 # ----- PART ONE -----
+
 
 def hand_score(hand: str) -> int:
     score = 0
@@ -60,8 +63,6 @@ def part_one(str_input: str):
     return sum(score)
 
 
-
-
 def test_part_one():
     assert hand_score("TTT98") == 3
     assert hand_score("33332") == 5
@@ -79,9 +80,9 @@ QQQJA 483""") == 6440
 
 # ----- PART TWO -----
 
-from itertools import product
 
 CARDS = ['A', 'K', 'Q', 'T'] + [str(num) for num in list(range(2,10))]
+
 
 def hand_score_v2(hand: str) -> int:
     score = 0
