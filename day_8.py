@@ -75,12 +75,11 @@ def part_two(str_input: str):
     for node in a_nodes:
         z_node = z_list_for_node(node, directions, node_dict)[0]
         constant = traverse_nodes(node, z_node, directions, node_dict)
-        print(len(directions))
         factors_and_constants.append({
             'constant': constant,
             'factor': traverse_nodes(z_node, z_node, directions[constant:] + directions[:constant], node_dict)
         })
-    #factor always == constant, for some reason, and is always a divisor of directions, which makes it much easier
+    # factor always == constant, for some reason, and is always a divisor of directions, which makes it much easier
     return np.lcm.reduce([node['factor'] for node in factors_and_constants])
 
 
