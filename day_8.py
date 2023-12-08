@@ -9,7 +9,7 @@ from read_data_function import read_data
 def traverse_nodes(start: str, destination: str, directions: list[str], node_dict: dict):
     count = 0
     current = start
-    while current != destination:
+    while (current != destination) or (count == 0):
         count += 1
         direction = directions[(count - 1)%len(directions)]
         if direction == 'L':
