@@ -103,12 +103,7 @@ L|-JF""") == 4
 
 
 # ----- PART TWO -----
-OPPOSITE_DICT = {
-    '7': 'F',
-    'F': '7',
-    'J': 'L',
-    'L': 'J'
-}
+
 
 def get_starting_point(loop: list[list[int]], edges: list[str]) -> list[int]:
     for edge in edges:
