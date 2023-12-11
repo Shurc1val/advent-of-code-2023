@@ -117,7 +117,7 @@ def min_max_map(num: int, axis: str, pipe_map: list[list[str]]) -> int:
     return min(max(0,num), len(pipe_map) - 1)
 
 
-def find_start_and_second(pipe_map, loop) -> list[int]:
+def find_start_and_second(pipe_map: list[list[str]], loop: list[list[int]]) -> list[int]:
     start = [0,0]
     current = start
     while current not in loop:
@@ -133,8 +133,7 @@ def find_start_and_second(pipe_map, loop) -> list[int]:
     return start, second
 
 
-
-def find_anti_clockwise_direction(loop, start, second) -> int:
+def find_anti_clockwise_direction(loop: list[list[int]], start: list[int], second: list[int]) -> int:
     start_index = loop.index(start)
     second_index = loop.index(second)
     dist = second_index - start_index
@@ -143,13 +142,13 @@ def find_anti_clockwise_direction(loop, start, second) -> int:
     return -dist/abs(dist)
 
 
-def find_all_to_left(pipe_map, loop, outside_loop, pipe, step):
+def find_all_to_left(pipe_map: list[list[str]], loop: list[list[int]], inside_loop: list[list[int]], pipe: list[int], step: list[int]):
     current = [pipe[0]+step[0], pipe[1]+step[1]]
     while (current not in loop) and \
         (min_max_map(current[0], 'y', pipe_map) == current[0]) and \
             (min_max_map(current[1], 'x', pipe_map) == current[1]):
-        if current not in outside_loop:
-            outside_loop.append(current)
+        if current not in inside_loop:
+            inside_loop.append(current)
         current = [current[0]+step[0], current[1]+step[1]]
 
 
