@@ -31,7 +31,6 @@ CORNERS = {
 
 def find_s_adjacent(pipe_map: list[list[str]], s_coord: list[int]) -> list[int]:
     if pipe_map[max(0, s_coord[0] - 1)][s_coord[1]] in ['|', 'F', '7']:
-        print('a')
         return [max(0, s_coord[0] - 1), s_coord[1]]
     
     if pipe_map[min(len(pipe_map) - 1, s_coord[0] + 1)][s_coord[1]] in ['|', 'L', 'J']:
@@ -119,16 +118,31 @@ def get_starting_point(loop: list[list[int]], edges: list[str]) -> list[int]:
 
 def min_max_map(num: int, axis: str, pipe_map: list[list[str]]) -> int:
     if axis == 'x':
-        return min(max(0,num), len(pipe_map) - 1)
-    return min(max(0,num), len(pipe_map[0]) - 1)
+        return min(max(0,num), len(pipe_map[0]) - 1)
+    return min(max(0,num), len(pipe_map) - 1)
 
+
+def find_start(pipe_map, loop) -> list[int]:
+    current = [0,0]
+    while current not in loop:
+        current = [current[0] + 1, current[1] + 1]
+    return current
+
+
+def find_anti_clockwise_direction(loop, start) -> int:
+    start_index = loop.index(start)
+    above = loop[(start_index + 1)%len(loop)]
+    if (above[0] > start[0]) or (above[1] < start[1]):
+        return 1
+    else:
+        return -1
 
 
 def find_all_to_left(pipe_map, loop, outside_loop, pipe, step):
     current = [pipe[0]+step[0], pipe[1]+step[1]]
     while (current not in loop) and \
-        (min_max_map(current[0], 'x', pipe_map) == current[0]) and \
-            (min_max_map(current[1], 'y', pipe_map) == current[1]):
+        (min_max_map(current[0], 'y', pipe_map) == current[0]) and \
+            (min_max_map(current[1], 'x', pipe_map) == current[1]):
         if current not in outside_loop:
             outside_loop.append(current)
         current = [current[0]+step[0], current[1]+step[1]]
@@ -141,39 +155,46 @@ def part_two(str_input: str):
             '[-1, 0]': [0,1]
         },
         'F': {
-            '[-1, 0]': [0,-1],
-            '[0, 1]': [1,0]
+            '[1, 0]': [0,1],
+            '[0, -1]': [-1,0]
         },
         'J': {
-            '[0, -1]': [-1,0],
-            '[1, 0]': [0,1]
+            '[0, 1]': [1,0],
+            '[-1, 0]': [0,-1]
         },
         'L': {
-            '[1, 0]': [0,1],
+            '[1, 0]': [0,-1],
             '[0, 1]': [-1,0]
         },
     }
     pipe_map = [list(line) for line in str_input.split("\n")]
     loop = find_loop(pipe_map)
-    outside_loop = []
-    for i,pipe in enumerate(loop[1:] + [loop[0]], start = 1):
-        if pipe[0] > loop[i-1][0]:
-            step = [0,-1]
-        elif pipe[0] < loop[i-1][0]:
-            step = [0,1]
-        elif pipe[1] > loop[i-1][1]:
-            step = [1,0]
-        else:
-            step = [-1,0]
-        find_all_to_left(pipe_map, loop, outside_loop, pipe, step)
-        
-        symbol = pipe_map[pipe[1]][pipe[0]]
-        if symbol in CORNERS.keys():
-            print(symbol, step)
-            find_all_to_left(pipe_map, loop, outside_loop, pipe, corner_vectors[symbol][str(step)])
 
-    print(len(pipe_map[0])*len(pipe_map) - len(loop), len(outside_loop))
-    return len(outside_loop)
+    traverse_start = find_start(pipe_map, loop)
+    start_index = loop.index(traverse_start)
+    if find_anti_clockwise_direction(loop, traverse_start) == -1:
+        loop = loop[::-1]
+    loop = loop[start_index:] + loop[:start_index]
+
+    inside_loop = []
+    for i,pipe in enumerate(loop):
+        j = (i - 1)%len(loop)
+        if pipe[0] > loop[j][0]:
+            step = [0,1]
+        elif pipe[0] < loop[j][0]:
+            step = [0,-1]
+        elif pipe[1] > loop[j][1]:
+            step = [-1,0]
+        else:
+            step = [1,0]
+        
+        find_all_to_left(pipe_map, loop, inside_loop, pipe, step)
+        
+        symbol = pipe_map[pipe[0]][pipe[1]]
+        if symbol in CORNERS.keys():
+            find_all_to_left(pipe_map, loop, inside_loop, pipe, corner_vectors[symbol][str(step)])
+
+    return len(inside_loop)
 
 
 def test_part_two():
