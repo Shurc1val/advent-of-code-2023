@@ -117,20 +117,30 @@ def min_max_map(num: int, axis: str, pipe_map: list[list[str]]) -> int:
     return min(max(0,num), len(pipe_map) - 1)
 
 
-def find_start(pipe_map, loop) -> list[int]:
-    current = [0,0]
+def find_start_and_second(pipe_map, loop) -> list[int]:
+    start = [0,0]
+    current = start
     while current not in loop:
-        current = [current[0] + 1, current[1] + 1]
-    return current
+        if min_max_map(current[1], 'x', pipe_map) == current[1]:
+            current = [current[0], current[1] + 1]
+        else:
+            current = [current[0] + 1, 0]
+    start = current
+    current = [current[0] + 1, 0]
+    while current not in loop:
+        current = [current[0], current[1] + 1]
+    second = current
+    return start, second
 
 
-def find_anti_clockwise_direction(loop, start) -> int:
+
+def find_anti_clockwise_direction(loop, start, second) -> int:
     start_index = loop.index(start)
-    above = loop[(start_index + 1)%len(loop)]
-    if (above[0] > start[0]) or (above[1] < start[1]):
-        return 1
-    else:
-        return -1
+    second_index = loop.index(second)
+    dist = second_index - start_index
+    if abs(dist) <= len(loop)//2:
+        return dist/abs(dist)
+    return -dist/abs(dist)
 
 
 def find_all_to_left(pipe_map, loop, outside_loop, pipe, step):
@@ -165,9 +175,9 @@ def part_two(str_input: str):
     pipe_map = [list(line) for line in str_input.split("\n")]
     loop = find_loop(pipe_map)
 
-    traverse_start = find_start(pipe_map, loop)
-    start_index = loop.index(traverse_start)
-    if find_anti_clockwise_direction(loop, traverse_start) == -1:
+    start, second = find_start_and_second(pipe_map, loop)
+    start_index = loop.index(start)
+    if find_anti_clockwise_direction(loop, start, second) == -1:
         loop = loop[::-1]
     loop = loop[start_index:] + loop[:start_index]
 
