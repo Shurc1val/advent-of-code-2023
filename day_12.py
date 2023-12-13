@@ -17,44 +17,6 @@ def check_row_valid(row: str, experiment_row: str):
     return True
 
 
-def check_partial_combination(row: str, spring_strings: list[str], combination: list[int]):
-    experiment_row = ''.join([combination[i] + spring_strings[i] for i in range(len(combination))])
-    exp_row_length = len(experiment_row)
-    if not check_row_valid(row[:exp_row_length], experiment_row):
-        return False
-    
-    if len(row[exp_row_length:]) < sum([len(spring_string) for spring_string in spring_strings[len(combination):]]):
-        return False
-
-    if row[exp_row_length:].count('?') + row[exp_row_length:].count('#') < sum([len(spring_string) - 1 for spring_string in spring_strings[len(combination):]]):
-        return False
-    
-    if row[exp_row_length:].count('?') + row[exp_row_length:].count('.') < len(spring_strings) - len(combination):
-        return False
-    
-    return True
-
-
-def get_possible_space_combinations_validate(sum_value: int, num_spaces: int, row: str, spring_strings: list[str], prefix: list[int] = None):
-    
-    if prefix is None:
-        if len(row) < sum([len(spring_string) for spring_string in spring_strings]):
-            return []
-        prefix = []
-
-    if num_spaces == 1:
-        prefix.append(sum_value*'.')
-        return [prefix]
-    
-    if not check_partial_combination(row, spring_strings, prefix):
-        return []
-
-    options = []
-    for i in range(sum_value + 1):
-        options += get_possible_space_combinations_validate(sum_value - i, num_spaces - 1, row, spring_strings, prefix + [i*'.'])
-    return options
-
-
 def get_first_row_spring_string(row: str) -> list[dict]:
     for i, string in enumerate(row):
         if string == "#":
@@ -87,7 +49,6 @@ def get_number_substring_arrangements(string_length: int, substring_lengths: lis
         num_arrangements += num
     
     return num_arrangements
-
 
 
 def possible_no_hash_options(row: int, numbers_alt: list[int], cache_dict: dict = None):
