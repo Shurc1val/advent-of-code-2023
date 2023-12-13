@@ -1,5 +1,3 @@
-from copy import deepcopy
-from itertools import product
 import pytest
 
 from read_data_function import read_data
